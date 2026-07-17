@@ -45,11 +45,35 @@
       <!-- ⚠️ ЗАМЕНИТЕ координаты на свои! -->
       <a-entity 
           gltf-model="#astronaut"
-          gps-entity-place="latitude: 58.74045044185144; longitude: 27.8156889272413;"
-          scale="10 10 10"
+          gps-entity-place="latitude: 58.740450; longitude: 27.815688;"
+          scale="20 20 20"
           position="0 0 0">
       </a-entity>
 
     </a-scene>
+    <script>
+  if (navigator.geolocation) {
+    navigator.geolocation.watchPosition(
+      (position) => {
+        console.log('📍 Ваши координаты:', 
+          position.coords.latitude.toFixed(6), 
+          position.coords.longitude.toFixed(6));
+        console.log('🎯 Точность:', position.coords.accuracy, 'метров');
+        
+        // Обновляем текст на экране
+        document.getElementById('info').innerHTML = 
+          `📍 Ваши координаты:<br>
+           ${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}<br>
+           Точность: ${Math.round(position.coords.accuracy)} м<br>
+           Поворачивайте телефон вокруг себя`;
+      },
+      (error) => {
+        console.error('❌ Ошибка GPS:', error);
+        document.getElementById('info').innerHTML = 
+          '❌ Ошибка GPS. Разрешите доступ к геолокации.';
+      }
+    );
+  }
+</script>
   </body>
 </html>
