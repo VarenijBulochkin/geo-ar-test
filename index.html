@@ -3,14 +3,14 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     
-    <!-- 🔧 ИСПРАВЛЕНО: Используем A-Frame 1.2.0. Он наиболее стабилен в паре с AR.js -->
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <!-- Подключаем стабильную версию A-Frame -->
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     
-    <!-- Стабильная версия AR.js -->
+    <!-- 🔧 ИСПРАВЛЕНО: Подключаем стабильный релиз AR.js (3.4.5), а не ветку master -->
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
     
     <style>
-      body { margin: 0; overflow: hidden; background: #000; }
+      body { margin: 0; overflow: hidden; }
       #info {
         position: absolute;
         top: 10px;
@@ -21,21 +21,7 @@
         z-index: 999;
         font-family: Arial, sans-serif;
         font-size: 14px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-      }
-      #camera-error {
-        display: none;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: rgba(255, 0, 0, 0.8);
-        color: white;
-        padding: 20px;
-        border-radius: 10px;
-        z-index: 1000;
-        text-align: center;
-        font-family: Arial, sans-serif;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
       }
     </style>
   </head>
@@ -45,14 +31,8 @@
       Поворачивайте телефон вокруг себя
     </div>
 
-    <div id="camera-error">
-      ⚠️ Камера недоступна.<br>
-      Проверьте разрешения в настройках браузера.
-    </div>
-
-    <!-- 🔧 ИСПРАВЛЕНО: Добавлен background="color: transparent" и упрощён рендер -->
+    <!-- 🔧 ИСПРАВЛЕНО: Упрощённый рендер + videoTexture: true для исправления камеры на мобильных -->
     <a-scene 
-        background="color: transparent"
         vr-mode-ui="enabled: false"
         renderer="antialias: true; alpha: true; logarithmicDepthBuffer: true;"
         arjs="sourceType: webcam; debugUIEnabled: false; videoTexture: true;">
@@ -65,7 +45,7 @@
       <!-- Камера с геолокацией -->
       <a-camera gps-camera rotation-reader></a-camera>
 
-      <!-- Источник света -->
+      <!-- Источник света для теней -->
       <a-light type="directional" 
                color="#FFF" 
                intensity="0.8" 
@@ -79,7 +59,7 @@
       <!-- Объект в конкретной точке мира -->
       <a-entity 
           gps-entity-place="latitude: 58.740615; longitude: 27.818822;"
-          scale="15 15 15">
+          scale="15 15 15"> <!-- Увеличил до 15, чтобы точно было видно -->
           
           <!-- Круг-платформа под моделью -->
           <a-circle 
@@ -102,19 +82,8 @@
 
     </a-scene>
 
-    <!-- Скрипт для отображения GPS координат и проверки камеры -->
+    <!-- Скрипт для отображения GPS координат -->
     <script>
-      // 1. Проверка доступа к камере
-      navigator.mediaDevices.getUserMedia({ video: true })
-        .then(() => {
-          console.log('✅ Камера работает');
-        })
-        .catch((err) => {
-          console.error('❌ Камера заблокирована:', err);
-          document.getElementById('camera-error').style.display = 'block';
-        });
-
-      // 2. GPS трекинг
       if (navigator.geolocation) {
         navigator.geolocation.watchPosition(
           (position) => {
